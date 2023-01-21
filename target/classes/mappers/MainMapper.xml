@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leeyg.ygslab.mappers.main">
+	
+	<select id="mainPostList" resultType="com.leeyg.ygslab.vo.MainPostVO">
+		SELECT writing_idx AS idx, writing_title AS title, writing_date AS date, writing_type AS type
+		FROM tb_writing
+		UNION
+		SELECT it_idx AS idx, it_title AS title, it_date AS date, it_type AS type
+		FROM tb_it
+		ORDER BY date DESC
+		LIMIT 3;
+	</select>
+	
+	<select id="writingDetail" parameterType="int" resultType="com.leeyg.ygslab.vo.WritingVO">
+		SELECT writing_idx, writing_title, writing_content, DATE_FORMAT(writing_date, '%Y-%M-%D') AS writing_date
+		FROM tb_writing
+		WHERE writing_idx=#{idx}
+	</select>
+	
+	<select id="ITDetail" parameterType="int" resultType="com.leeyg.ygslab.vo.ITVO">
+		SELECT it_idx, it_title, it_content, DATE_FORMAT(it_date, '%Y-%M-%D') AS it_date
+		FROM tb_it
+		WHERE it_idx=#{idx}
+	</select>
+	
+	<select id="writingList" resultType="com.leeyg.ygslab.vo.WritingVO">
+		SELECT writing_idx, writing_title, DATE_FORMAT(writing_date, '%Y-%m-%d') AS writing_date
+		FROM tb_writing
+		ORDER BY writing_idx DESC
+		LIMIT #{displayList}, 10;
+	</select>
+	
+	<select id="ITList" resultType="com.leeyg.ygslab.vo.ITVO">
+		SELECT it_idx, it_title, DATE_FORMAT(it_date, '%Y-%m-%d') AS it_date
+		FROM tb_it
+		ORDER BY it_idx DESC
+		LIMIT #{displayList}, 10;
+	</select>
+	
+	<select id="writingListCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM tb_writing
+	</select>
+	
+	<select id="ITListCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM tb_it
+	</select>
+	
+	<select id="loginAction" parameterType="com.leeyg.ygslab.vo.AdminVO" resultType="int">
+		SELECT count(*)
+		FROM tb_admin
+		WHERE admin_id=#{admin_id}
+		AND admin_pw=#{admin_pw}
+	</select>
+	
+	<insert id="writeWritingAction" parameterType="com.leeyg.ygslab.vo.WritingVO">
+		INSERT INTO tb_writing(writing_idx, writing_title, writing_content, writing_date, writing_type)
+		VALUES (#{writing_idx}, #{writing_title}, #{writing_content}, SYSDATE(), 'writing')
+	</insert>
+	
+	<insert id="writeITAction" parameterType="com.leeyg.ygslab.vo.ITVO">
+		INSERT INTO tb_it(it_idx, it_title, it_content, it_date, it_type)
+		VALUES (#{it_idx}, #{it_title}, #{it_content}, SYSDATE(), 'IT')
+	</insert>
+	
+	<select id="getWritingCurrentIdx" resultType="int">
+		SELECT writing_idx
+		FROM tb_writing
+		ORDER BY writing_idx DESC
+		LIMIT 1
+	</select>
+	
+	<select id="getITCurrentIdx" resultType="int">
+		SELECT it_idx
+		FROM tb_it
+		ORDER BY it_idx DESC
+		LIMIT 1
+	</select>
+	
+	<select id="modifyWritingList" resultType="com.leeyg.ygslab.vo.WritingVO">
+		SELECT writing_idx, writing_title
+		FROM tb_writing
+		ORDER BY writing_idx DESC
+	</select>
+	
+	<select id="modifyITList" resultType="com.leeyg.ygslab.vo.ITVO">
+		SELECT it_idx, it_title
+		FROM tb_it
+		ORDER BY it_idx DESC
+	</select>
+	
+	<update id="modifyWritingAction" parameterType="com.leeyg.ygslab.vo.WritingVO">
+		UPDATE tb_writing
+		SET writing_title=#{writing_title}, writing_content=#{writing_content}, writing_date=sysdate()
+		WHERE writing_idx=#{writing_idx}
+	</update>
+	
+	<update id="modifyITAction" parameterType="com.leeyg.ygslab.vo.ITVO">
+		UPDATE tb_it
+		SET it_title=#{it_title}, it_content=#{it_content}, it_date=sysdate()
+		WHERE it_idx=#{it_idx}
+	</update>
+	
+	<delete id="deleteWritingAction" parameterType="int">
+		DELETE FROM tb_writing
+		WHERE writing_idx=#{idx}
+	</delete>
+	
+	<delete id="deleteITAction" parameterType="int">
+		DELETE FROM tb_it
+		WHERE it_idx=#{idx}
+	</delete>
+	
+	<update id="deleteWritingMoveIdx" parameterType="int">
+		UPDATE tb_writing
+		SET writing_idx=#{idx} - 1
+		WHERE writing_idx=#{idx}
+	</update>
+	
+	<update id="deleteITMoveIdx" parameterType="int">
+		UPDATE tb_it
+		SET it_idx=#{idx} - 1
+		WHERE it_idx=#{idx}
+	</update>
+	
+</mapper>
